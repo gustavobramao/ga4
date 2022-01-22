@@ -1,0 +1,27 @@
+library(googleAuthR)
+library(googleAnalyticsR)
+library(dplyr)
+
+options(googleAuthR.scopes.selected = c(
+  "https://www.googleapis.com/auth/bigquery",
+  "https://www.googleapis.com/auth/analytics")
+)
+
+
+gar_auth_service("~/Documents/google_analytics/ga4.json")
+
+
+my_property_id <- 204933197
+basic <- ga_data(
+  my_property_id,
+  metrics = c("activeUsers","sessions", "totalRevenue"),
+  dimensions = c("source","medium"),
+  date_range = c("2021-12-01", "2021-12-31")
+)
+
+
+basic %>%group_by(source) %>% 
+  summarise(
+  totalRevenue = sum(totalRevenue),
+  sessions = sum(sessions)
+)
